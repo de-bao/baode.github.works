@@ -78,7 +78,7 @@ export class Posts {
     }
   }
 
-  // 通过 ID 获取单篇文章（公开接口）
+  // 通过 ID 获取单篇文章（公开接口，仅已发布）
   static async getById(request: Request, env: Env): Promise<Response> {
     try {
       const id = request.params?.id;
@@ -101,6 +101,33 @@ export class Posts {
       return Response.json(post);
     } catch (error) {
       console.error('Get post by ID error:', error);
+      return Response.json({ error: 'Internal server error' }, { status: 500 });
+    }
+  }
+
+  // 通过 ID 获取单篇文章（需要认证，可获取任意状态，用于编辑）
+  static async getByIdForEdit(request: Request, env: Env): Promise<Response> {
+    try {
+      const id = request.params?.id;
+      if (!id) {
+        return Response.json({ error: 'ID is required' }, { status: 400 });
+      }
+
+      const post = await env.DB.prepare(
+        'SELECT * FROM posts WHERE id = ?'
+      ).bind(id).first() as any;
+
+      if (!post) {
+        return Response.json({ error: 'Not found' }, { status: 404 });
+      }
+
+      // 解析 JSON 字段
+      post.tags = post.tags ? JSON.parse(post.tags) : [];
+      post.categories = post.categories ? JSON.parse(post.categories) : [];
+
+      return Response.json(post);
+    } catch (error) {
+      console.error('Get post by ID for edit error:', error);
       return Response.json({ error: 'Internal server error' }, { status: 500 });
     }
   }
