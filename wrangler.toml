@@ -1,0 +1,36 @@
+name = "blog-admin-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 数据库绑定
+# 首次部署前需要运行: npx wrangler d1 create blog-db
+# 然后将生成的 database_id 填入下方
+[[d1_databases]]
+binding = "DB"
+database_name = "blog-db"
+database_id = "46cb0538-d5bf-4e99-85ea-3ff44db69ca7"
+
+# R2 存储绑定
+# 首次部署前需要运行: npx wrangler r2 bucket create blog-media
+# 注意：需要先在 Cloudflare Dashboard 启用 R2
+# 1. 访问 https://dash.cloudflare.com/ → R2 → Get started
+# 2. 运行: npx wrangler r2 bucket create blog-media
+# 3. 取消下面的注释并重新部署
+# [[r2_buckets]]
+# binding = "MEDIA_BUCKET"
+# bucket_name = "blog-media"
+
+# 环境变量（生产环境）
+[vars]
+ADMIN_USERNAME = "admin"
+# JWT_SECRET 应该使用 wrangler secret put JWT_SECRET 设置，不要写在这里
+
+# 开发环境配置
+[env.development]
+vars = { ADMIN_USERNAME = "admin" }
+
+# 路由配置（自定义域名）
+routes = [
+  { pattern = "api.debao.qzz.io/api/*", zone_name = "debao.qzz.io" }
+]

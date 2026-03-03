@@ -1,0 +1,28 @@
+{
+  "name": "de-bao.github.workers",
+  "version": "1.0.0",
+  "description": "Cloudflare Workers 博客后台管理系统",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create blog-db",
+    "db:migrate": "wrangler d1 execute blog-db --file=./schema.sql"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "blog",
+    "admin"
+  ],
+  "author": "Baud",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241106.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.78.0"
+  },
+  "dependencies": {
+    "itty-router": "^4.0.23"
+  }
+}
