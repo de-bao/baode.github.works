@@ -78,6 +78,33 @@ export class Posts {
     }
   }
 
+  // 通过 ID 获取单篇文章（公开接口）
+  static async getById(request: Request, env: Env): Promise<Response> {
+    try {
+      const id = request.params?.id;
+      if (!id) {
+        return Response.json({ error: 'ID is required' }, { status: 400 });
+      }
+
+      const post = await env.DB.prepare(
+        'SELECT * FROM posts WHERE id = ? AND status = ?'
+      ).bind(id, 'published').first() as any;
+
+      if (!post) {
+        return Response.json({ error: 'Not found' }, { status: 404 });
+      }
+
+      // 解析 JSON 字段
+      post.tags = post.tags ? JSON.parse(post.tags) : [];
+      post.categories = post.categories ? JSON.parse(post.categories) : [];
+
+      return Response.json(post);
+    } catch (error) {
+      console.error('Get post by ID error:', error);
+      return Response.json({ error: 'Internal server error' }, { status: 500 });
+    }
+  }
+
   // 创建文章
   static async create(request: Request, env: Env): Promise<Response> {
     try {

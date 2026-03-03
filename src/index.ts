@@ -16,7 +16,8 @@ const router = Router();
 // 公开路由
 router.post('/api/auth/login', Auth.login);
 router.get('/api/posts', Posts.list);  // 公开获取已发布文章
-router.get('/api/posts/:slug', Posts.get);  // 公开获取单篇文章
+router.get('/api/posts/:slug', Posts.get);  // 公开获取单篇文章（通过 slug）
+router.get('/api/posts/id/:id', Posts.getById);  // 公开获取单篇文章（通过 ID）
 
 // 需要认证的路由
 router.post('/api/posts', authenticate, Posts.create);
