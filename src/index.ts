@@ -13,6 +13,21 @@ export interface Env {
 
 const router = Router();
 
+// 健康检查端点（用于 UptimeRobot 等监控服务）
+router.get('/api/health', async () => {
+  return Response.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+router.head('/api/health', async () => {
+  // HEAD 请求只返回状态码和头部，不返回 body
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+});
+
 // 公开路由
 router.post('/api/auth/login', Auth.login);
 router.get('/api/posts', Posts.list);  // 公开获取已发布文章
@@ -86,7 +101,7 @@ export default {
       return new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         },
       });
@@ -99,7 +114,7 @@ export default {
       if (response) {
         const newHeaders = new Headers(response.headers);
         newHeaders.set('Access-Control-Allow-Origin', '*');
-        newHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        newHeaders.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
         newHeaders.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         
         return new Response(response.body, {
